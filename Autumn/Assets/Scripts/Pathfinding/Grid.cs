@@ -16,6 +16,8 @@ public class Grid : MonoBehaviour
     private int m_gridSizeX;
     private int m_gridSizeY;
 
+    public int MaxSize {get {return m_gridSizeX * m_gridSizeY;}}
+
     //TEMP
     public List<Node> path;
 
@@ -60,11 +62,10 @@ public class Grid : MonoBehaviour
                 int checkX = node.gridX + x;
                 int checkY = node.gridY + y;
 
-                //Check if inside grid
-                if(checkX >= 0 && checkX < m_gridSizeX && checkY >= 0 && checkY <= m_gridSizeY)
-                {
-                    neighbours.Add(m_grid[checkX,checkY]);
-                }
+                //Check if inside grid               
+				if (checkX >= 0 && checkX < m_gridSizeX && checkY >= 0 && checkY < m_gridSizeY) {
+					neighbours.Add(m_grid[checkX,checkY]);
+				}
             }
         }
 
