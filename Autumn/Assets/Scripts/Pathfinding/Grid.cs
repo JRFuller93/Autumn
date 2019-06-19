@@ -16,6 +16,9 @@ public class Grid : MonoBehaviour
     private int m_gridSizeX;
     private int m_gridSizeY;
 
+    //TEMP
+    public List<Node> path;
+
     private void Start() 
     {
         m_nodeDiameter = m_nodeRadius * 2;
@@ -38,9 +41,34 @@ public class Grid : MonoBehaviour
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * m_nodeDiameter + m_nodeRadius) + Vector3.forward * (y * m_nodeDiameter + m_nodeRadius);
                 
                 bool isWalkable = !(Physics.CheckSphere(worldPoint,m_nodeRadius,m_unwalkableMask));
-                m_grid[x,y] = new Node(isWalkable,worldPoint);
+                m_grid[x,y] = new Node(isWalkable,worldPoint,x,y);
             }
         }
+    }
+
+    public List<Node> GetNeighbours(Node node)
+    {
+        List<Node> neighbours = new List<Node>();
+
+        for(int x = -1; x <= 1; x++)
+        {
+            for(int y = -1; y <= 1; y++)
+            {
+                if(x == 0 && y == 0)
+                    continue;
+
+                int checkX = node.gridX + x;
+                int checkY = node.gridY + y;
+
+                //Check if inside grid
+                if(checkX >= 0 && checkX < m_gridSizeX && checkY >= 0 && checkY <= m_gridSizeY)
+                {
+                    neighbours.Add(m_grid[checkX,checkY]);
+                }
+            }
+        }
+
+        return neighbours;
     }
 
     public Node NodeFromWorldPosition(Vector3 worldPosition)
@@ -70,7 +98,15 @@ public class Grid : MonoBehaviour
                 Gizmos.color = node.walkable? Color.white: Color.red;
 
                 if(playerNode.worldPosition == node.worldPosition)
-                    Gizmos.color = Color.cyan;     
+                    Gizmos.color = Color.cyan; 
+
+                if(path != null) 
+                {
+                    if(path.Contains(node))
+                    {
+                        Gizmos.color = Color.black; 
+                    }
+                }   
                 
                 Gizmos.DrawCube(node.worldPosition,Vector3.one * (m_nodeDiameter - .1f));
 
